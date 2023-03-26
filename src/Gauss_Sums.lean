@@ -6,6 +6,7 @@ import number_theory.cyclotomic.basic
 import data.zmod.basic
 import data.complex.basic
 import ring_theory.roots_of_unity
+import algebra.group_power.basic
 noncomputable theory
 /-!
 # Modified Gauss sums
@@ -40,7 +41,7 @@ variables {F : Type u} [field F] [fintype F] (p : ℕ) [fact p.prime] [char_p F 
 def add_char'(x : F) : ℂˣ  :=
   ζ_p^( zmod.val (algebra.trace (zmod (ring_char F)) F x))
   
-def gauss_sum' (χ : mul_char F ℂ ) : ℂ := ∑ x : F,  (add_char' ζ_p x)* (χ x)
+def gauss_sum' (χ : mul_char F ℂ ) : ℂ := ∑ x : F,  -(add_char' ζ_p x)* (χ x)
 
 instance char_p_non_zero(p : ℕ )[fact p.prime][char_p F p] : ne_zero (ring_char F) :=
 {out :=  begin
@@ -54,11 +55,13 @@ instance char_p_non_zero(p : ℕ )[fact p.prime][char_p F p] : ne_zero (ring_cha
 end}
 
 
-lemma ζ_p_pow_eq_one (n : ℤ  ) : ζ_p^(n % p) = ζ_p^n := by
+lemma ζ_p_pow_eq_one(n : ℤ )[fact p.prime] [char_p F p] : ζ_p^((n % ring_char F) ) = ζ_p^(n) := by
 begin
   rw ←  mul_inv_eq_one, 
   rw ← zpow_neg ζ_p n, 
   rw ← zpow_add ζ_p,  
+  have h1 : ring_char F = p := by apply ring_char.eq,
+  rw h1,
   rw  is_primitive_root.zpow_eq_one_iff_dvd (fact.out (is_primitive_root ζ_p p)) ,
   rw ← int.modeq_zero_iff_dvd,
   have h1 : 0 = n + -n := by ring,
@@ -68,15 +71,19 @@ begin
 end
 
 
-lemma add_char'_mul_property (a : F) (x : F ){p : ℕ}: add_char' ζ_p (a + x) = add_char' ζ_p a * add_char' ζ_p x := by 
+lemma add_char'_mul_property (a : F) (x : F )(p : ℕ )[fact p.prime] [char_p F p] [ fact (is_primitive_root ζ_p p) ]: add_char' ζ_p (a + x) = add_char' ζ_p a * add_char' ζ_p x := by 
 begin 
   unfold add_char',
   simp,
   have h1 : ring_char F = p := by apply ring_char.eq,
-  rw [zmod.val_add char_p_non_zero p],
-  sorry
-
+  rw [zmod.val_add ],
+  rw[← pow_add],
+  rw ←  mul_inv_eq_one,
+  rw ← zpow_neg ζ_p  ,
 end 
+
+lemma add_char'_conjugate
+
 
 /-!
 ## Main results
