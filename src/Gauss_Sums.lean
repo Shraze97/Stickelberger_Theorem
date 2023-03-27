@@ -7,6 +7,7 @@ import data.zmod.basic
 import data.complex.basic
 import ring_theory.roots_of_unity
 import algebra.group_power.basic
+import data.complex.basic
 noncomputable theory
 /-!
 # Modified Gauss sums
@@ -26,10 +27,11 @@ We extend χ to all of 𝔽 by setting χ(0) = 0(even if χ is a trivial charact
 -/ 
 open add_char 
 open_locale big_operators
-
+open_locale classical
+open_locale complex_conjugate
 universes u v w
 -- variables (f : ℕ)
-variables {F : Type u} [field F] [fintype F] (p : ℕ) [fact p.prime] [char_p F p](ζ_p : ℂˣ) [ fact (is_primitive_root ζ_p p) ]
+variables {F : Type u} [field F] [fintype F] (ζ_p : ℂˣ) [ fact (is_primitive_root ζ_p (ring_char F)) ]
 /-- Definition of the Gauss sum associated to a multiplicative and an additive character. -/
 -- structure add_char' extends add_char F ℂˣ:=
 -- (ψ : F → ℂˣ )
@@ -41,28 +43,24 @@ variables {F : Type u} [field F] [fintype F] (p : ℕ) [fact p.prime] [char_p F 
 def add_char'(x : F) : ℂˣ  :=
   ζ_p^( zmod.val (algebra.trace (zmod (ring_char F)) F x))
   
+
 def gauss_sum' (χ : mul_char F ℂ ) : ℂ := ∑ x : F,  -(add_char' ζ_p x)* (χ x)
 
-instance char_p_non_zero(p : ℕ )[fact p.prime][char_p F p] : ne_zero (ring_char F) :=
+instance Complex_units_coe: has_coe ℂˣ ℂ := ⟨sorry⟩ 
+
+instance char_p_non_zero : ne_zero (ring_char F) :=
 {out :=  begin
   intro h,
-  have h1 : ring_char F = p := 
-  begin
-    apply ring_char.eq ,
-  end,
-  rw h1 at h,
-  exact nat.prime.ne_zero (fact.out p.prime) h,
+  haveI : fact (ring_char F).prime := ⟨char_p.char_is_prime F _⟩,
+  exact nat.prime.ne_zero (fact.out (ring_char F).prime) h,
 end}
 
-
-lemma ζ_p_pow_eq_one(n : ℤ )[fact p.prime] [char_p F p] : ζ_p^((n % ring_char F) ) = ζ_p^(n) := by
+lemma ζ_p_helper (n : ℤ ): ζ_p^((n % (ring_char F)) ) = ζ_p^(n) := by
 begin
   rw ←  mul_inv_eq_one, 
   rw ← zpow_neg ζ_p n, 
   rw ← zpow_add ζ_p,  
-  have h1 : ring_char F = p := by apply ring_char.eq,
-  rw h1,
-  rw  is_primitive_root.zpow_eq_one_iff_dvd (fact.out (is_primitive_root ζ_p p)) ,
+  rw  is_primitive_root.zpow_eq_one_iff_dvd (fact.out (is_primitive_root ζ_p (ring_char F))) ,
   rw ← int.modeq_zero_iff_dvd,
   have h1 : 0 = n + -n := by ring,
   rw h1,
@@ -70,24 +68,44 @@ begin
   apply int.mod_modeq,
 end
 
+lemma ζ_p_pow_eq_one(n : ℕ ): ζ_p^((n % (ring_char F)) ) = ζ_p^(n) := by
+begin
+  sorry
+end
 
-lemma add_char'_mul_property (a : F) (x : F )(p : ℕ )[fact p.prime] [char_p F p] [ fact (is_primitive_root ζ_p p) ]: add_char' ζ_p (a + x) = add_char' ζ_p a * add_char' ζ_p x := by 
+lemma add_char'_mul_property (a : F) (x : F ): add_char' ζ_p (a + x) = add_char' ζ_p a * add_char' ζ_p x := by 
 begin 
   unfold add_char',
   simp,
-  have h1 : ring_char F = p := by apply ring_char.eq,
+  haveI : fact (ring_char F).prime := ⟨char_p.char_is_prime F _⟩,
   rw [zmod.val_add ],
   rw[← pow_add],
-  rw ←  mul_inv_eq_one,
-  rw ← zpow_neg ζ_p  ,
+  rw[← ζ_p_pow_eq_one ζ_p ((algebra.trace (zmod (ring_char F)) F a).val + (algebra.trace (zmod (ring_char F)) F x).val)],
+  assumption,
+  assumption,
 end 
 
-lemma add_char'_conjugate
+def conjugate (x : ℂˣ) : ℂ := conj (Complex_units_coe.coe x)
+
+lemma add_char'_conjugate (x : F ):  conjugate ( add_char' ζ_p x) = (add_char' ζ_p (-x)) := by
+begin
+  sorry
+end
+
+
+def conj_mul_char' (χ : mul_char F ℂ ) :mul_char F ℂ :=
+{ to_fun := by { sorry },
+  map_nonunit' := by { sorry },
+  map_one' := by sorry,
+  map_mul' := by { sorry, }
+}
 
 
 /-!
 ## Main results
 -/
+lemma gauss_sum_1 (χ : mul_char F ℂ ) : conj (gauss_sum' ζ_p χ) = (conj (χ(-1))) * (gauss_sum' ζ_p (conj_mul_char' (χ)) )  := by
+sorry 
 
 
 
