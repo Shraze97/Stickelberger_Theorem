@@ -35,7 +35,7 @@ open_locale classical
 open_locale complex_conjugate
 universes u v w
 -- variables (f : ℕ)
-variables {F : Type u} [field F] [fintype F] (ζ_p : ℂ) [ fact (is_primitive_root ζ_p (ring_char F)) ]
+variables {F : Type u} [field F] [fintype F] (ζ_p : ℂ) ( h0 : (is_primitive_root ζ_p (ring_char F)) )
 /-- Definition of the Gauss sum associated to a multiplicative and an additive character. -/
 -- structure add_char' extends add_char F ℂˣ:=
 -- (ψ : F → ℂˣ )
@@ -72,32 +72,36 @@ end}
 --   apply int.modeq.add_right,
 --   apply int.mod_modeq,
 -- end
-
+include h0
+variable {ζ_p}
 /-- Primitive root's Property on NMod-/
 lemma ζ_p_helper(n : ℕ ): ζ_p^((n % (ring_char F)) ) = ζ_p^(n) := by
 begin
   nth_rewrite 1 ← nat.mod_add_div n (ring_char F),
-  simp only [pow_add, pow_mul, is_primitive_root.pow_eq_one (fact.out (is_primitive_root ζ_p (ring_char F))), one_pow, mul_one],
+  simp only [pow_add, pow_mul, is_primitive_root.pow_eq_one h0, one_pow, mul_one],
 end
 
 /-- add_char's property -/
 lemma add_char'_mul_property (a : F) (x : F ): add_char' ζ_p (a + x) = add_char' ζ_p a * add_char' ζ_p x := by 
 begin 
   unfold add_char',
-  simp,
+  simp only [map_add],
   haveI : fact (ring_char F).prime := ⟨char_p.char_is_prime F _⟩,
   rw [zmod.val_add ],
   rw[← pow_add],
-  rw[← ζ_p_helper ζ_p ((algebra.trace (zmod (ring_char F)) F a).val + (algebra.trace (zmod (ring_char F)) F x).val)],
-  assumption,
-  assumption,
+  rw[← ζ_p_helper h0 ((algebra.trace (zmod (ring_char F)) F a).val + (algebra.trace (zmod (ring_char F)) F x).val)],
 end 
 
 
 -- def conjugate (x : ℂˣ) : ℂ := conj (x.val)
 lemma ζ_p_norm : ‖ζ_p‖ = 1 := 
-
+begin
   sorry
+end
+lemma ζ_p_ne_zero : ζ_p ≠ 0 :=
+begin
+  sorry 
+end
 
 lemma conj_ζ_p : conj ζ_p = (ζ_p)⁻¹ := 
 begin 
@@ -106,7 +110,8 @@ end
 /-- conjugation of our primitive root of unity-/
 lemma ζ_p_helper_add (n : ℤ )(x : F): conj (ζ_p^n) = ζ_p^(-n) := by 
 begin 
-  simp only [map_zpow₀, zpow_neg,conj_ζ_p],
+  simp only [map_zpow₀, conj_ζ_p h0, inv_zpow'],
+end
   -- have h1 : (ζ_p)^(ring_char F) = 1 := by 
   -- { 
   --   apply is_primitive_root.pow_eq_one,
@@ -140,11 +145,11 @@ begin
   -- simp at h3,
   -- rw ← complex.mul_self_abs,
   -- simp[h3], 
-end
+
 
 lemma ζ_p_help_add' (n : ℕ  )(x : F): conj (ζ_p^n) = ζ_p^(- int.of_nat (n) ) := by
 begin 
-  simpa using ζ_p_helper_add ζ_p n x,
+  simpa only using ζ_p_helper_add h0 ↑n x,
 end
 
 
@@ -152,7 +157,7 @@ end
 lemma add_char'_conjugate (x : F ):  conj ( add_char' ζ_p x) = add_char' ζ_p (-x):= by
 begin
   unfold add_char',
-  rw ζ_p_help_add' ζ_p (algebra.trace (zmod (ring_char F)) F x).val x, 
+  rw ζ_p_help_add' h0 (algebra.trace (zmod (ring_char F)) F x).val x, 
   sorry
 end
 
@@ -169,7 +174,7 @@ def conj_mul_char' (χ : mul_char F ℂ ) :mul_char F ℂ :=
    }
 }
 
-lemma mul_char_minus_one (χ : mul_char F ℂ ) : conj_mul_char' χ (-1) = χ (-1) := by
+lemma mul_char_minus_one (χ : mul_char F ℂ ) : conj_mul_char' h0 χ (-1) = χ (-1) := by
 begin
   unfold conj_mul_char',
   simp,
