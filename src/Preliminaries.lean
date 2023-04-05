@@ -10,6 +10,7 @@ import algebra.group_power.basic
 import data.complex.basic
 import analysis.normed.field.basic
 import data.pnat.defs
+
 noncomputable theory
 /-!
 # Modified Gauss sums
@@ -28,6 +29,8 @@ Here, let 𝔽 = 𝔽_q be a finite field with q elements(q = p^f ) and let χ �
 We extend χ to all of 𝔽 by setting χ(0) = 0(even if χ is a trivial character).  
 -/ 
 open add_char 
+open zmod
+open mul_char
 open_locale big_operators
 open_locale classical
 open_locale complex_conjugate
@@ -46,7 +49,7 @@ def add_char'(x : F) : ℂˣ  :=
   ζ_p^( zmod.val (algebra.trace (zmod (ring_char F)) F x))
   
 
-def gauss_sum' (χ : mul_char F ℂ ) : ℂ := ∑' x : F,  -(add_char' ζ_p x)* (χ x)
+def gauss_sum' (χ : mul_char F ℂ ) : ℂ := ∑ x : F,  -(add_char' ζ_p x)* (χ x)
 
 
 
@@ -161,7 +164,20 @@ def conj_mul_char' (χ : mul_char F ℂ ) :mul_char F ℂ :=
    }
 }
 
+lemma mul_char_minus_one (χ : mul_char F ℂ ) : conj_mul_char' χ (-1) = χ (-1) := by
+begin
+  unfold conj_mul_char',
+  simp,
+  have h1 : χ(-1) = 1 ∨ χ(-1) = 1 := by
+    begin
+      have lem : χ(-1) * χ(-1) = 1 := by
+      {
+        sorry,
+      },
+    end
+  sorry
 
+end
 /-!
 ## Main results
 -/
