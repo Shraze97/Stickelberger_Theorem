@@ -60,6 +60,7 @@ instance char_p_non_zero : ne_zero (ring_char F) :=
   exact nat.prime.ne_zero (fact.out (ring_char F).prime) h,
 end}
 
+/-- Primitive root's Proprty on NMod -/
 lemma ζ_p_helper_help (n : ℤ ): ζ_p^((n % (ring_char F)) ) = ζ_p^(n) := by
 begin
   rw ←  mul_inv_eq_one, 
@@ -73,11 +74,13 @@ begin
   apply int.mod_modeq,
 end
 
+/-- Primitive root's Property on NMod-/
 lemma ζ_p_helper(n : ℕ ): ζ_p^((n % (ring_char F)) ) = ζ_p^(n) := by
 begin
   simpa using ζ_p_helper_help ζ_p n,
 end
 
+/-- add_char's property -/
 lemma add_char'_mul_property (a : F) (x : F ): add_char' ζ_p (a + x) = add_char' ζ_p a * add_char' ζ_p x := by 
 begin 
   unfold add_char',
@@ -93,6 +96,7 @@ end
 
 def conjugate (x : ℂˣ) : ℂ := conj (x.val)
 
+/-- conjugation of our primitive root of unity-/
 lemma ζ_p_helper_add (n : ℤ )(x : F): conjugate (ζ_p^n) = (ζ_p^(-n)).val := by 
 begin 
   unfold conjugate,
@@ -143,24 +147,19 @@ lemma add_char'_conjugate (x : F ):  conjugate ( add_char' ζ_p x) = (add_char' 
 begin
   unfold add_char',
   rw ζ_p_help_add' ζ_p (algebra.trace (zmod (ring_char F)) F x).val x, 
-  simp,
   sorry
 end
 
-
+/-- `conj_mul_char' (χ : mul_char F ℂ) ` is the complex conjugate of  `χ`, which gives us another `mul_char`-/
 def conj_mul_char' (χ : mul_char F ℂ ) :mul_char F ℂ :=
-{ to_fun := by {classical, exact λ x, conj (χ x) },
-  map_nonunit' := by { classical, exact λ x hx, by simpa using χ.map_nonunit hx },
+{ to_fun :=  λ x, conj (χ x),
+  map_nonunit' := λ x hx, by simpa only [map_eq_zero] using χ.map_nonunit hx,
   map_one' := by {
-    classical,
-    rw[map_one],
-    simp,
+    simp only [map_one],
   },
   map_mul' := by { 
-    classical,
     intros x y,
-    rw[map_mul],
-    simp,
+    simp only [map_mul],
    }
 }
 

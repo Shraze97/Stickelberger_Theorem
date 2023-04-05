@@ -18,7 +18,7 @@ begin
   simp,
   rw[map_sum],
   have h : χ(-1) = conj_mul_char' χ(-1) := by 
-  { unfold conj_mul_char', }
+  { unfold conj_mul_char',sorry },
   sorry
 end
 
