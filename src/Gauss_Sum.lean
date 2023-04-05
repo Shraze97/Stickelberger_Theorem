@@ -8,7 +8,7 @@ open_locale classical
 open_locale complex_conjugate
 universes u v w
 -- variables (f : ℕ)
-variables {F : Type u} [field F] [fintype F] (ζ_p : ℂˣ) [ fact (is_primitive_root ζ_p (ring_char F)) ]
+variables {F : Type u} [field F] [fintype F] (ζ_p : ℂ) [ fact (is_primitive_root ζ_p (ring_char F)) ]
 
 
 lemma gauss_sum_1 (χ : mul_char F ℂ ) : conj (gauss_sum' ζ_p χ) =  (χ(-1)) * (gauss_sum' ζ_p (conj_mul_char' (χ)) )  := by

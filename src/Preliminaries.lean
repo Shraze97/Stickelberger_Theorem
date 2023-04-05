@@ -4,7 +4,6 @@ import algebra.char_p.char_and_card
 import field_theory.finite.trace 
 import number_theory.cyclotomic.basic
 import data.zmod.basic
-import data.complex.basic
 import ring_theory.roots_of_unity
 import algebra.group_power.basic
 import data.complex.basic
@@ -36,7 +35,7 @@ open_locale classical
 open_locale complex_conjugate
 universes u v w
 -- variables (f : ℕ)
-variables {F : Type u} [field F] [fintype F] (ζ_p : ℂˣ) [ fact (is_primitive_root ζ_p (ring_char F)) ]
+variables {F : Type u} [field F] [fintype F] (ζ_p : ℂ) [ fact (is_primitive_root ζ_p (ring_char F)) ]
 /-- Definition of the Gauss sum associated to a multiplicative and an additive character. -/
 -- structure add_char' extends add_char F ℂˣ:=
 -- (ψ : F → ℂˣ )
@@ -45,7 +44,7 @@ variables {F : Type u} [field F] [fintype F] (ζ_p : ℂˣ) [ fact (is_primitive
 
 
 
-def add_char'(x : F) : ℂˣ  :=
+def add_char'(x : F) : ℂ  :=
   ζ_p^( zmod.val (algebra.trace (zmod (ring_char F)) F x))
   
 
@@ -60,24 +59,25 @@ instance char_p_non_zero : ne_zero (ring_char F) :=
   exact nat.prime.ne_zero (fact.out (ring_char F).prime) h,
 end}
 
-/-- Primitive root's Proprty on NMod -/
-lemma ζ_p_helper_help (n : ℤ ): ζ_p^((n % (ring_char F)) ) = ζ_p^(n) := by
-begin
-  rw ←  mul_inv_eq_one, 
-  rw ← zpow_neg ζ_p n, 
-  rw ← zpow_add ζ_p,  
-  rw  is_primitive_root.zpow_eq_one_iff_dvd (fact.out (is_primitive_root ζ_p (ring_char F))) ,
-  rw ← int.modeq_zero_iff_dvd,
-  have h1 : 0 = n + -n := by ring,
-  rw h1,
-  apply int.modeq.add_right,
-  apply int.mod_modeq,
-end
+-- /-- Primitive root's Proprty on NMod -/
+-- lemma ζ_p_helper_help (n : ℤ ): ζ_p^((n % (ring_char F)) ) = ζ_p^(n) := by
+-- begin
+--   rw ←  mul_inv_eq_one, 
+--   rw ← zpow_neg ζ_p n, 
+--   rw ← zpow_add ζ_p,  
+--   rw  is_primitive_root.zpow_eq_one_iff_dvd (fact.out (is_primitive_root ζ_p (ring_char F))) ,
+--   rw ← int.modeq_zero_iff_dvd,
+--   have h1 : 0 = n + -n := by ring,
+--   rw h1,
+--   apply int.modeq.add_right,
+--   apply int.mod_modeq,
+-- end
 
 /-- Primitive root's Property on NMod-/
 lemma ζ_p_helper(n : ℕ ): ζ_p^((n % (ring_char F)) ) = ζ_p^(n) := by
 begin
-  simpa using ζ_p_helper_help ζ_p n,
+  nth_rewrite 1 ← nat.mod_add_div n (ring_char F),
+  simp only [pow_add, pow_mul, is_primitive_root.pow_eq_one (fact.out (is_primitive_root ζ_p (ring_char F))), one_pow, mul_one],
 end
 
 /-- add_char's property -/
@@ -94,56 +94,62 @@ begin
 end 
 
 
-def conjugate (x : ℂˣ) : ℂ := conj (x.val)
+-- def conjugate (x : ℂˣ) : ℂ := conj (x.val)
+lemma ζ_p_norm : ‖ζ_p‖ = 1 := 
 
-/-- conjugation of our primitive root of unity-/
-lemma ζ_p_helper_add (n : ℤ )(x : F): conjugate (ζ_p^n) = (ζ_p^(-n)).val := by 
+  sorry
+
+lemma conj_ζ_p : conj ζ_p = (ζ_p)⁻¹ := 
 begin 
-  unfold conjugate,
-  simp[conj],
-  have h1 : (ζ_p)^(ring_char F) = 1 := by 
-  { 
-    apply is_primitive_root.pow_eq_one,
-    apply fact.out (is_primitive_root ζ_p (ring_char F)),
-  },
-  have h2 : ‖(ζ_p).val‖  = 1 := by 
-  {
-    have h3 : ring_char F > 0 := by 
-    {
-      haveI : fact (ring_char F).prime := ⟨char_p.char_is_prime F _⟩,
-      exact nat.prime.pos (fact.out (ring_char F).prime),
-    },
-    set r := (ring_char F).to_pnat' with h4,
-    have h5 : ((ζ_p).val)^(↑r) = 1 := by 
-    {
-      rw  h4, 
-      simp,
-      rw [nat.to_pnat',nat.succ_pnat],
-      rw pnat.mk_coe,
-      rw nat.succ_pred_eq_of_pos h3,
-      rw [←units.coe_pow ζ_p (ring_char F),← units.coe_one ,units.eq_iff.mpr h1], 
-    },
-    apply norm_one_of_pow_eq_one h5,
-  },
-  rw complex.inv_def,
-  have h3 : ‖ ((ζ_p).val)^n ‖ = 1 := by 
-  {
-    rw [norm_zpow , h2],
-    simp,
-  },
-  simp at h3,
-  rw ← complex.mul_self_abs,
-  simp[h3], 
+  sorry
+end
+/-- conjugation of our primitive root of unity-/
+lemma ζ_p_helper_add (n : ℤ )(x : F): conj (ζ_p^n) = ζ_p^(-n) := by 
+begin 
+  simp only [map_zpow₀, zpow_neg,conj_ζ_p],
+  -- have h1 : (ζ_p)^(ring_char F) = 1 := by 
+  -- { 
+  --   apply is_primitive_root.pow_eq_one,
+  --   apply fact.out (is_primitive_root ζ_p (ring_char F)),
+  -- },
+  -- have h2 : ‖(ζ_p).val‖  = 1 := by 
+  -- {
+  --   have h3 : ring_char F > 0 := by 
+  --   {
+  --     haveI : fact (ring_char F).prime := ⟨char_p.char_is_prime F _⟩,
+  --     exact nat.prime.pos (fact.out (ring_char F).prime),
+  --   },
+  --   set r := (ring_char F).to_pnat' with h4,
+  --   have h5 : ((ζ_p).val)^(↑r) = 1 := by 
+  --   {
+  --     rw  h4, 
+  --     simp,
+  --     rw [nat.to_pnat',nat.succ_pnat],
+  --     rw pnat.mk_coe,
+  --     rw nat.succ_pred_eq_of_pos h3,
+  --     rw [←units.coe_pow ζ_p (ring_char F),← units.coe_one ,units.eq_iff.mpr h1], 
+  --   },
+  --   apply norm_one_of_pow_eq_one h5,
+  -- },
+  -- rw complex.inv_def,
+  -- have h3 : ‖ ((ζ_p).val)^n ‖ = 1 := by 
+  -- {
+  --   rw [norm_zpow , h2],
+  --   simp,
+  -- },
+  -- simp at h3,
+  -- rw ← complex.mul_self_abs,
+  -- simp[h3], 
 end
 
-lemma ζ_p_help_add' (n : ℕ  )(x : F): conjugate (ζ_p^n) = (ζ_p^(- int.of_nat (n) )).val := by
+lemma ζ_p_help_add' (n : ℕ  )(x : F): conj (ζ_p^n) = ζ_p^(- int.of_nat (n) ) := by
 begin 
   simpa using ζ_p_helper_add ζ_p n x,
 end
 
 
 
-lemma add_char'_conjugate (x : F ):  conjugate ( add_char' ζ_p x) = (add_char' ζ_p (-x)).val := by
+lemma add_char'_conjugate (x : F ):  conj ( add_char' ζ_p x) = add_char' ζ_p (-x):= by
 begin
   unfold add_char',
   rw ζ_p_help_add' ζ_p (algebra.trace (zmod (ring_char F)) F x).val x, 
