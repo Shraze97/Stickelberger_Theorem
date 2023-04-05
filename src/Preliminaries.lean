@@ -128,40 +128,20 @@ lemma ζ_p_helper_add (n : ℤ )(x : F): conj (ζ_p^n) = ζ_p^(-n) := by
 begin 
   simp only [map_zpow₀, conj_ζ_p h0, inv_zpow'],
 end
-  -- have h1 : (ζ_p)^(ring_char F) = 1 := by 
-  -- { 
-  --   apply is_primitive_root.pow_eq_one,
-  --   apply fact.out (is_primitive_root ζ_p (ring_char F)),
-  -- },
-  -- have h2 : ‖(ζ_p).val‖  = 1 := by 
-  -- {
-  --   have h3 : ring_char F > 0 := by 
-  --   {
-  --     haveI : fact (ring_char F).prime := ⟨char_p.char_is_prime F _⟩,
-  --     exact nat.prime.pos (fact.out (ring_char F).prime),
-  --   },
-  --   set r := (ring_char F).to_pnat' with h4,
-  --   have h5 : ((ζ_p).val)^(↑r) = 1 := by 
-  --   {
-  --     rw  h4, 
-  --     simp,
-  --     rw [nat.to_pnat',nat.succ_pnat],
-  --     rw pnat.mk_coe,
-  --     rw nat.succ_pred_eq_of_pos h3,
-  --     rw [←units.coe_pow ζ_p (ring_char F),← units.coe_one ,units.eq_iff.mpr h1], 
-  --   },
-  --   apply norm_one_of_pow_eq_one h5,
-  -- },
-  -- rw complex.inv_def,
-  -- have h3 : ‖ ((ζ_p).val)^n ‖ = 1 := by 
-  -- {
-  --   rw [norm_zpow , h2],
-  --   simp,
-  -- },
-  -- simp at h3,
-  -- rw ← complex.mul_self_abs,
-  -- simp[h3], 
 
+lemma neg_val_eq_val_neg (n : ℕ) [ne_zero n] {a : zmod n} : (-a).val ≡ -(a.val) [ZMOD n] :=
+begin
+  rw zmod.neg_val',
+  rw [← eq_iff_modeq_int (zmod n)],
+  simp only [int.coe_nat_mod, zmod.int_cast_mod, int.cast_coe_nat, zmod.nat_cast_val, int.cast_neg, zmod.int_cast_cast,
+  zmod.cast_id', id.def],
+  have : a.val < n := zmod.val_lt a,
+  rw eq_neg_iff_add_eq_zero,
+  nth_rewrite 1 ←zmod.nat_cast_zmod_val a,
+  norm_cast,
+  rw nat.sub_add_cancel this.le,
+  exact zmod.nat_cast_self n,
+end
 
 lemma ζ_p_help_add' (n : ℕ )(x : F): conj (ζ_p^n) = ζ_p^(- (n : ℤ)) := by
 begin 
@@ -198,7 +178,7 @@ begin
 end
 
 
-
+#check neg_val_eq_val_neg h0 (ring_char F) 
 lemma add_char'_conjugate (x : F ):  conj ( add_char' ζ_p x) = add_char' ζ_p (-x):= by
 begin
   unfold add_char',
@@ -207,7 +187,7 @@ begin
   rw ζ_p_pow_eq h0,
   rw map_neg,
   symmetry,
-  sorry
+  apply neg_val_eq_val_neg h0 (ring_char F) , 
 end
 
 /-- `conj_mul_char' (χ : mul_char F ℂ) ` is the complex conjugate of  `χ`, which gives us another `mul_char`-/
@@ -226,7 +206,6 @@ def conj_mul_char' (χ : mul_char F ℂ ) :mul_char F ℂ :=
 lemma mul_char_minus_one (χ : mul_char F ℂ ) : conj_mul_char' h0 χ (-1) = χ (-1) := by
 begin
   unfold conj_mul_char',
-  simp,
   have h1 : χ(-1) = 1 ∨ χ(-1) = 1 := by
     {
       have lem : χ(-1) * χ(-1) = 1 := by
