@@ -9,7 +9,7 @@ import algebra.group_power.basic
 import data.complex.basic
 import analysis.normed.field.basic
 import data.pnat.defs
-
+import algebra.ring.defs
 noncomputable theory
 /-!
 # Modified Gauss sums
@@ -72,6 +72,7 @@ end}
 --   apply int.modeq.add_right,
 --   apply int.mod_modeq,
 -- end
+
 include h0
 variable {ζ_p}
 /-- Primitive root's Property on NMod-/
@@ -96,17 +97,32 @@ end
 -- def conjugate (x : ℂˣ) : ℂ := conj (x.val)
 lemma ζ_p_norm : ‖ζ_p‖ = 1 := 
 begin
-  sorry
+  haveI : fact (ring_char F).prime := ⟨char_p.char_is_prime F _⟩,
+  have := nat.prime.pos (fact.out (ring_char F).prime), 
+  apply norm_one_of_pow_eq_one,
+  convert h0.pow_eq_one,
+  swap, 
+  exact ⟨ ring_char F , this⟩,
+  refl,
 end
 lemma ζ_p_ne_zero : ζ_p ≠ 0 :=
 begin
-  sorry 
+  intro h,
+  have :=  ζ_p_norm h0,
+  rw h at this,
+  simpa only [complex.norm_eq_abs, absolute_value.map_zero, zero_ne_one] using this,
 end
 
 lemma conj_ζ_p : conj ζ_p = (ζ_p)⁻¹ := 
 begin 
-  sorry
+  apply eq_inv_of_mul_eq_one_right,
+  rw complex.mul_conj,
+  rw complex.norm_sq_eq_abs,
+  rw ← complex.norm_eq_abs,
+  rw ζ_p_norm h0,
+  norm_num,
 end
+
 /-- conjugation of our primitive root of unity-/
 lemma ζ_p_helper_add (n : ℤ )(x : F): conj (ζ_p^n) = ζ_p^(-n) := by 
 begin 
@@ -147,9 +163,38 @@ end
   -- simp[h3], 
 
 
-lemma ζ_p_help_add' (n : ℕ  )(x : F): conj (ζ_p^n) = ζ_p^(- int.of_nat (n) ) := by
+lemma ζ_p_help_add' (n : ℕ )(x : F): conj (ζ_p^n) = ζ_p^(- (n : ℤ)) := by
 begin 
   simpa only using ζ_p_helper_add h0 ↑n x,
+end
+
+lemma ζ_p_pow_neq_zero (a : ℤ) : ζ_p^a ≠ 0 := 
+begin
+  by_contra lem,
+  by_cases h : a = 0,
+  {rw h at lem,
+  simp only [zpow_zero, one_ne_zero] at lem,
+  exact lem,},
+  {rw zpow_eq_zero_iff h at lem,
+  exact ζ_p_ne_zero h0 lem,},
+end
+
+lemma ζ_p_pow_eq (a b : ℤ ) : ζ_p^a = ζ_p^b ↔ a ≡ b[ZMOD (ring_char F)] := by
+begin 
+  nth_rewrite 0 ( show b = a + (b - a), by ring),
+  rw zpow_add',
+  rw int.modeq_iff_dvd,
+  rw ← is_primitive_root.zpow_eq_one_iff_dvd h0,
+  split,
+  {intro h,
+  nth_rewrite 0 ← mul_one (ζ_p^a) at h, 
+  simp only [is_domain.mul_left_cancel_of_ne_zero (ζ_p_pow_neq_zero h0 a) h],
+  },
+  {intro h,
+  rw [h, mul_one], 
+  },
+  left,
+  exact ζ_p_ne_zero h0,
 end
 
 
@@ -158,6 +203,10 @@ lemma add_char'_conjugate (x : F ):  conj ( add_char' ζ_p x) = add_char' ζ_p (
 begin
   unfold add_char',
   rw ζ_p_help_add' h0 (algebra.trace (zmod (ring_char F)) F x).val x, 
+  rw ← zpow_coe_nat,
+  rw ζ_p_pow_eq h0,
+  rw map_neg,
+  symmetry,
   sorry
 end
 
