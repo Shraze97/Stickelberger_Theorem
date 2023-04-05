@@ -169,12 +169,13 @@ begin
   unfold conj_mul_char',
   simp,
   have h1 : χ(-1) = 1 ∨ χ(-1) = 1 := by
-    begin
+    {
       have lem : χ(-1) * χ(-1) = 1 := by
       {
         sorry,
       },
-    end
+      sorry,
+    },
   sorry
 
 end
