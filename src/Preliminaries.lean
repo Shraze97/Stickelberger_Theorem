@@ -59,27 +59,13 @@ instance char_p_non_zero : ne_zero (ring_char F) :=
   exact nat.prime.ne_zero (fact.out (ring_char F).prime) h,
 end}
 
--- /-- Primitive root's Proprty on NMod -/
--- lemma ζ_p_helper_help (n : ℤ ): ζ_p^((n % (ring_char F)) ) = ζ_p^(n) := by
--- begin
---   rw ←  mul_inv_eq_one, 
---   rw ← zpow_neg ζ_p n, 
---   rw ← zpow_add ζ_p,  
---   rw  is_primitive_root.zpow_eq_one_iff_dvd (fact.out (is_primitive_root ζ_p (ring_char F))) ,
---   rw ← int.modeq_zero_iff_dvd,
---   have h1 : 0 = n + -n := by ring,
---   rw h1,
---   apply int.modeq.add_right,
---   apply int.mod_modeq,
--- end
 
 include h0
 variable {ζ_p}
 /-- Primitive root's Property on NMod-/
 lemma ζ_p_helper(n : ℕ ): ζ_p^((n % (ring_char F)) ) = ζ_p^(n) := by
 begin
-  nth_rewrite 1 ← nat.mod_add_div n (ring_char F),
-  simp only [pow_add, pow_mul, is_primitive_root.pow_eq_one h0, one_pow, mul_one],
+  rw pow_eq_pow_mod n h0.pow_eq_one ,
 end
 
 /-- add_char's property -/
@@ -177,8 +163,7 @@ begin
   exact ζ_p_ne_zero h0,
 end
 
-
-#check neg_val_eq_val_neg h0 (ring_char F) 
+/-- Conjugation of `add_char' ζ_p x` is simply `add_char' ζ_p -x`-/
 lemma add_char'_conjugate (x : F ):  conj ( add_char' ζ_p x) = add_char' ζ_p (-x):= by
 begin
   unfold add_char',
@@ -203,20 +188,37 @@ def conj_mul_char' (χ : mul_char F ℂ ) :mul_char F ℂ :=
    }
 }
 
+lemma mul_char_minus_one' (χ : mul_char F ℂ ) : χ(-1)^2= 1 := by 
+begin
+  have : χ(1) = 1 := map_one χ ,
+  have lem : (-1: F )  * (-1: F ) = 1 := by ring,
+  rw [← this ],
+  nth_rewrite 1 ← lem,
+  rw [ map_mul χ (-1 : F) (-1 : F),pow_two],
+end
+
+lemma mul_char_minus_one_ne_zero (χ : mul_char F ℂ ) : χ (-1) ≠ 0 := 
+begin 
+    by_contra h , 
+    have lem : χ(-1)^2 = 0 := by {
+      rw [h, zero_pow (nat.succ_pos 1)],
+    },
+    rw [mul_char_minus_one' h0 χ] at lem,
+    exact one_ne_zero lem,
+end
+
 lemma mul_char_minus_one (χ : mul_char F ℂ ) : conj_mul_char' h0 χ (-1) = χ (-1) := by
 begin
-  unfold conj_mul_char',
-  have h1 : χ(-1) = 1 ∨ χ(-1) = 1 := by
-    {
-      have lem : χ(-1) * χ(-1) = 1 := by
-      {
-        sorry,
-      },
-      sorry,
-    },
-  sorry
-
+  simp only [conj_mul_char', coe_mk, monoid_hom.coe_mk],
+  rw[complex.eq_conj_iff_real],
+  have lem : χ(-1)^2= 1 := mul_char_minus_one' h0 χ,
+  rw[sq_eq_one_iff] at lem,
+  cases lem with h1 h2,
+  {rw h1, use 1, exact complex.of_real_one,},
+  {rw h2, use -1, rw [complex.of_real_neg, complex.of_real_one],},
 end
+
+
 /-!
 ## Main results
 -/
