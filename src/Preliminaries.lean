@@ -74,8 +74,7 @@ begin
   unfold add_char',
   simp only [map_add],
   haveI : fact (ring_char F).prime := ⟨char_p.char_is_prime F _⟩,
-  rw [zmod.val_add ],
-  rw[← pow_add],
+  rw [zmod.val_add,← pow_add ],
   rw[← ζ_p_helper h0 ((algebra.trace (zmod (ring_char F)) F a).val + (algebra.trace (zmod (ring_char F)) F x).val)],
 end 
 
@@ -148,9 +147,7 @@ end
 lemma ζ_p_pow_eq (a b : ℤ ) : ζ_p^a = ζ_p^b ↔ a ≡ b[ZMOD (ring_char F)] := by
 begin 
   nth_rewrite 0 ( show b = a + (b - a), by ring),
-  rw zpow_add',
-  rw int.modeq_iff_dvd,
-  rw ← is_primitive_root.zpow_eq_one_iff_dvd h0,
+  rw [zpow_add',int.modeq_iff_dvd,← is_primitive_root.zpow_eq_one_iff_dvd h0],
   split,
   {intro h,
   nth_rewrite 0 ← mul_one (ζ_p^a) at h, 
@@ -167,10 +164,7 @@ end
 lemma add_char'_conjugate (x : F ):  conj ( add_char' ζ_p x) = add_char' ζ_p (-x):= by
 begin
   unfold add_char',
-  rw ζ_p_help_add' h0 (algebra.trace (zmod (ring_char F)) F x).val x, 
-  rw ← zpow_coe_nat,
-  rw ζ_p_pow_eq h0,
-  rw map_neg,
+  rw [ζ_p_help_add' h0 (algebra.trace (zmod (ring_char F)) F x).val x, ← zpow_coe_nat, ζ_p_pow_eq h0,map_neg], 
   symmetry,
   apply neg_val_eq_val_neg h0 (ring_char F) , 
 end
@@ -218,34 +212,4 @@ begin
   {rw h2, use -1, rw [complex.of_real_neg, complex.of_real_one],},
 end
 
-
-/-!
-## Main results
--/
-
-
-
-/-!
-Some important results are as follows.
-
-* `gauss_sum_mul_gauss_sum_eq_card`: The product of the Gauss
-  sums of `χ` and `ψ` and that of `χ⁻¹` and `ψ⁻¹` is the cardinality
-  of the source ring `R` (if `χ` is nontrivial, `ψ` is primitive and `R` is a field).
-* `gauss_sum_sq`: The square of the Gauss sum is `χ(-1)` times
-  the cardinality of `R` if in addition `χ` is a quadratic character.
-* `quad_gauss_sum_frob`: For a quadratic character `χ`, raising
-  the Gauss sum to the `p`th power (where `p` is the characteristic of
-  the target ring `R'`) multiplies it by `χ p`.
-* `char.card_pow_card`: When `F` and `F'` are finite fields and `χ : F → F'`
-  is a nontrivial quadratic character, then `(χ (-1) * #F)^(#F'/2) = χ (#F')`.
-* `finite_field.two_pow_card`: For every finite field `F` of odd characteristic,
-  we have `2^(#F/2) = χ₈(#F)` in `F`.
-
-This machinery can be used to derive (a generalization of) the Law of
-Quadratic Reciprocity.
-
-## Tags
-
-additive character, multiplicative character, Gauss sum
--/
 
