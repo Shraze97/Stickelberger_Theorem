@@ -44,7 +44,7 @@ variables {F : Type u} [field F] [fintype F] (ζ_p : ℂ) ( h0 : (is_primitive_r
 
 
 
-def add_char'(x : F) : ℂ  :=
+def add_char' (x : F) : ℂ  :=
   ζ_p^( zmod.val (algebra.trace (zmod (ring_char F)) F x))
   
 
@@ -161,7 +161,7 @@ begin
 end
 
 /-- Conjugation of `add_char' ζ_p x` is simply `add_char' ζ_p -x`-/
-lemma add_char'_conjugate (x : F ):  conj ( add_char' ζ_p x) = add_char' ζ_p (-x):= by
+lemma conj_add_char' (x : F ):  conj ( add_char' ζ_p x) = add_char' ζ_p (-x):= by
 begin
   unfold add_char',
   rw [ζ_p_help_add' h0 (algebra.trace (zmod (ring_char F)) F x).val x, ← zpow_coe_nat, ζ_p_pow_eq h0,map_neg], 
@@ -169,8 +169,9 @@ begin
   apply neg_val_eq_val_neg h0 (ring_char F) , 
 end
 
+omit h0
 /-- `conj_mul_char' (χ : mul_char F ℂ) ` is the complex conjugate of  `χ`, which gives us another `mul_char`-/
-def conj_mul_char' (χ : mul_char F ℂ ) :mul_char F ℂ :=
+def conj_mul_char (χ : mul_char F ℂ ) :mul_char F ℂ :=
 { to_fun :=  λ x, conj (χ x),
   map_nonunit' := λ x hx, by simpa only [map_eq_zero] using χ.map_nonunit hx,
   map_one' := by {
@@ -181,6 +182,14 @@ def conj_mul_char' (χ : mul_char F ℂ ) :mul_char F ℂ :=
     simp only [map_mul],
    }
 }
+
+
+lemma conj_mul_char_eval (χ : mul_char F ℂ) (x : F) :
+  conj_mul_char χ x = conj (χ x) :=
+begin
+  refl,
+end
+
 
 lemma mul_char_minus_one' (χ : mul_char F ℂ ) : χ(-1)^2= 1 := by 
 begin
@@ -197,19 +206,22 @@ begin
     have lem : χ(-1)^2 = 0 := by {
       rw [h, zero_pow (nat.succ_pos 1)],
     },
-    rw [mul_char_minus_one' h0 χ] at lem,
+    rw [mul_char_minus_one' χ] at lem,
     exact one_ne_zero lem,
 end
 
-lemma mul_char_minus_one (χ : mul_char F ℂ ) : conj_mul_char' h0 χ (-1) = χ (-1) := by
+lemma mul_char_minus_one (χ : mul_char F ℂ ) : conj_mul_char  χ (-1) = χ (-1) := by
 begin
-  simp only [conj_mul_char', coe_mk, monoid_hom.coe_mk],
+  simp only [conj_mul_char, coe_mk, monoid_hom.coe_mk],
   rw[complex.eq_conj_iff_real],
-  have lem : χ(-1)^2= 1 := mul_char_minus_one' h0 χ,
+  have lem : χ(-1)^2= 1 := mul_char_minus_one'  χ,
   rw[sq_eq_one_iff] at lem,
   cases lem with h1 h2,
   {rw h1, use 1, exact complex.of_real_one,},
   {rw h2, use -1, rw [complex.of_real_neg, complex.of_real_one],},
 end
+
+@[simp]lemma conj_mul_char_neg_one (χ : mul_char F ℂ ) : conj(  χ (-1) ) = χ(-1) := mul_char_minus_one χ
+
 
 
