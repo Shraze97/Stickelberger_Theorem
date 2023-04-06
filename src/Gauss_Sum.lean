@@ -27,7 +27,7 @@ begin
   rw[ equiv.neg_apply,neg_neg, ← neg_one_mul x],
   rw[map_mul],
   rw[map_mul],
-  simp only [mul_comm,mul_assoc,mul_left_comm, conj_mul_char_neg_one],
+  simp only [mul_comm,mul_assoc,mul_left_comm,  conj_mul_char_neg_one],
   -- simp_rw equiv.neg_apply,
   -- simp_rw neg_neg,
   -- simp_rw[← neg_one_mul _],
@@ -35,6 +35,6 @@ end
 
 lemma gauss_sum_2 (χ : mul_char F ℂ )(hχ : χ.is_nontrivial) : (gauss_sum' ζ_p χ) * (gauss_sum'(ζ_p ) (conj_mul_char  χ)) = χ(-1) * (fintype.elems F).card := by
 begin
-  sorry
+  sorry,
 end
 
