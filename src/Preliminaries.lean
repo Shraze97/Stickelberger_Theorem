@@ -10,6 +10,7 @@ import data.complex.basic
 import analysis.normed.field.basic
 import data.pnat.defs
 import algebra.ring.defs
+import field_theory.finite.basic
 noncomputable theory
 /-!
 # Modified Gauss sums
@@ -223,5 +224,18 @@ end
 
 @[simp]lemma conj_mul_char_neg_one (χ : mul_char F ℂ ) : conj(  χ (-1) ) = χ(-1) := mul_char_minus_one χ
 
+lemma conj_mul_char_eq_inv (χ : mul_char F ℂ )(x : F)(hx : x ≠ 0): conj_mul_char χ x = χ ( x⁻¹ ) := 
+begin 
+  sorry
+end
 
+
+lemma mul_char_norm (χ : mul_char F ℂ ) (x : F)(hx : x ≠ 0) : ‖ (χ x) ‖  = 1 := 
+begin 
+  have lem : x ^(fintype.card F - 1) = 1 := finite_field.pow_card_sub_one_eq_one x hx, 
+  have lem2 : (χ (x )) ^ (fintype.card F - 1) = 1 := by {
+    rw [← map_pow χ x (fintype.card F - 1),lem,map_one],
+  },
+  sorry
+end
 
