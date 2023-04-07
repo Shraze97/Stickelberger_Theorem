@@ -1,16 +1,9 @@
+/-
+Copyright you
+-/
 import number_theory.legendre_symbol.add_character
 import number_theory.legendre_symbol.zmod_char
-import algebra.char_p.char_and_card
-import field_theory.finite.trace 
-import number_theory.cyclotomic.basic
-import data.zmod.basic
-import ring_theory.roots_of_unity
-import algebra.group_power.basic
-import data.complex.basic
-import analysis.normed.field.basic
-import data.pnat.defs
-import algebra.ring.defs
-import field_theory.finite.basic
+
 noncomputable theory
 /-!
 # Modified Gauss sums

@@ -49,13 +49,13 @@ lemma gauss_sum_2_aux {F : Type u} {ζ_p : ℂ}
       finset.univ ×ˢ finset.filter (λ (x : F), x ≠ 0) finset.univ,
       (add_char' ζ_p (x.fst * x.snd + x.snd) * χ x.fst)
          =
-    χ (-1) * ↑((fintype.elems F).card) :=
+    χ (-1) * fintype.card F :=
 begin
   admit,
 end
 
 
-lemma gauss_sum_2 (χ : mul_char F ℂ )(hχ : χ.is_nontrivial) : (gauss_sum' ζ_p χ) * (gauss_sum'(ζ_p ) (conj_mul_char  χ)) = χ(-1) * (fintype.elems F).card := 
+lemma gauss_sum_2 (χ : mul_char F ℂ )(hχ : χ.is_nontrivial) : (gauss_sum' ζ_p χ) * (gauss_sum'(ζ_p ) (conj_mul_char  χ)) = χ(-1) * fintype.card F := 
 begin
   rw [gauss_sum',gauss_sum'],
   have foo :  ∀ (x : F), x ∈ (finset.univ : finset F) → (-add_char' ζ_p x * (conj_mul_char χ) x) ≠ 0 → x ≠ 0,
@@ -77,7 +77,6 @@ begin
     rw[finset.mem_filter] at hb,
     cases hb with _ hb,
     dsimp only at *,
-        
     sorry },
   { dsimp only,
     sorry },
