@@ -224,11 +224,12 @@ end
 
 @[simp]lemma conj_mul_char_neg_one (χ : mul_char F ℂ ) : conj(  χ (-1) ) = χ(-1) := mul_char_minus_one χ
 
-lemma conj_mul_char_eq_inv (χ : mul_char F ℂ )(x : F)(hx : x ≠ 0): conj_mul_char χ x = χ ( x⁻¹ ) := 
+lemma conj_mul_char_eq_inv (χ : mul_char F ℂ )(x : F): conj_mul_char χ x = χ ( x⁻¹ )  := 
 begin 
   sorry
 end
 
+#check @map_inv₀
 
 lemma mul_char_norm (χ : mul_char F ℂ ) (x : F)(hx : x ≠ 0) : ‖ (χ x) ‖  = 1 := 
 begin 
